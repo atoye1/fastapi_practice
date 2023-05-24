@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from domain.question import question_router
 
 app = FastAPI()
 origins = [
@@ -14,6 +15,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/hello")
-def hello():
-    return {"message":"hello pybo"}
+
+app.include_router(question_router.router)
