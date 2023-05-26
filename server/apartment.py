@@ -13,4 +13,5 @@ df = api.get_data(
     sigungu_code="41135",
     year_month="202212",
 )
-df.tail()
+print(len(df))
+print(df)

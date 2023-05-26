@@ -1,6 +1,9 @@
 <script>
   import fastapi from "../lib/api";
   import Error from "../components/Error.svelte";
+  import { push } from "svelte-spa-router";
+  import moment from "moment/min/moment-with-locales";
+  moment.locale("ko");
 
   export let params = {};
 
@@ -45,11 +48,17 @@
       </div>
       <div class="d-flex justify-content-end">
         <div class="badge bg-light text-dark p-2">
-          {question.create_date}
+          {moment(question.create_date).format("YYYY-MM-DD hh:mm a")}
         </div>
       </div>
     </div>
   </div>
+  <button
+    class="btn btn-secondary"
+    on:click={() => {
+      push("/");
+    }}>목록으로</button
+  >
   <!-- 답변 목록 -->
   <h5 class="border-bottom my-3 py-2">
     {question.answers.length}개의 답변이 있습니다.
