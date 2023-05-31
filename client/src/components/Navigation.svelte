@@ -1,6 +1,18 @@
 <script>
   import { link } from "svelte-spa-router";
   import { page, username, is_login, access_token } from "../lib/store";
+  import fastapi from "../lib/api";
+
+  async function getUser() {
+    let url = "/api/user/getUser";
+    try {
+      const response = await fastapi("get", url);
+      const responseBody = await response.json();
+      console.log(responseBody);
+    } catch (err) {
+      console.log("error", err.message);
+    }
+  }
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
@@ -27,6 +39,11 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         {#if $is_login}
+          <li class="nav-item">
+            <a use:link class="nav-link" href="/" on:click={getUser}
+              >유저 조회하기</a
+            >
+          </li>
           <li class="nav-item">
             <a
               use:link

@@ -11,6 +11,9 @@ class Question(Base):
     subject = Column(String, nullable=False)
     content = Column(Text, nullable=False)
     create_date = Column(DateTime, nullable=False)
+    modify_date = Column(DateTime, nullable=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+    user = relationship("User", backref="question_users")
 
 
 class Answer(Base):
@@ -19,8 +22,11 @@ class Answer(Base):
     id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=False)
     create_date = Column(DateTime, nullable=False)
-    question_id = Column(Integer, ForeignKey("question.id"))
+    modify_date = Column(DateTime, nullable=True)
+    question_id = Column(Integer, ForeignKey("question.id"), nullable=True)
     question = relationship("Question", backref="answers")
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+    user = relationship("User", backref="answer_users")
 
 
 class User(Base):

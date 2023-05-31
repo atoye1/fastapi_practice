@@ -1,6 +1,15 @@
 from pydantic import BaseModel, validator, EmailStr
 
 
+class User(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+
 class UserCreate(BaseModel):
     username: str
     password1: str
