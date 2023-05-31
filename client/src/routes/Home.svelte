@@ -23,7 +23,7 @@
     total = responseBody.total;
     $page = _page;
   }
-  getQuestionList($page);
+  // getQuestionList($page);
   $: getQuestionList($page);
 </script>
 
