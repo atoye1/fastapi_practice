@@ -9,7 +9,7 @@
   export let params = {};
 
   let question_id = params.question_id;
-  let question = { answers: [] };
+  let question = { answers: [], voter: [] };
   let content = "";
   let parsedError = { detail: [] };
 
@@ -93,6 +93,38 @@
     }
     return;
   }
+
+  async function vote_question(question_id) {
+    if (window.confirm("정말 추천하시겠습니까?")) {
+      let url = "/api/question/vote";
+      let params = {
+        question_id: question_id,
+      };
+      try {
+        const result = await fastapi("post", url, params);
+        get_question();
+      } catch (error) {
+        parsedError = JSON.parse(error.message);
+        setTimeout(() => (parsedError = { detail: [] }), 5000);
+      }
+    }
+  }
+
+  async function vote_answer(answer_id) {
+    if (window.confirm("정말 추천하시겠습니까?")) {
+      let url = "/api/answer/vote";
+      let params = {
+        answer_id: answer_id,
+      };
+      try {
+        const result = await fastapi("post", url, params);
+        get_question();
+      } catch (error) {
+        parsedError = JSON.parse(error.message);
+        setTimeout(() => (parsedError = { detail: [] }), 5000);
+      }
+    }
+  }
 </script>
 
 <div class="container my-3">
@@ -123,6 +155,14 @@
         </div>
       </div>
       <div class="my-3">
+        <button
+          class="btn btn-sm btn-outline-primary"
+          on:click={() => vote_question(question.id)}
+        >
+          추천 <span class="badge rounded-pill bg-success"
+            >{question.voter.length}</span
+          >
+        </button>
         {#if question.user && $username === question.user.username}
           <a
             use:link
@@ -173,6 +213,15 @@
             <div>
               {moment(answer.create_date).format("YYYY-MM-DD hh:mm a")}
             </div>
+            <button
+              class="btn btn-sm btn-outline-primary"
+              on:click={() => {
+                vote_answer(answer.id);
+              }}
+              >추천<span class="badge rounded-pill bg-secondary mx-1"
+                >{answer.voter.length}</span
+              ></button
+            >
             {#if answer.user && $username === answer.user.username}
               <button
                 class="btn btn-sm btn-outline-secondary"
