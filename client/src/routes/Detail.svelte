@@ -4,12 +4,13 @@
   import { push, link } from "svelte-spa-router";
   import moment from "moment/min/moment-with-locales";
   import { is_login, username } from "../lib/store";
+  import { marked } from "marked";
   moment.locale("ko");
 
   export let params = {};
 
   let question_id = params.question_id;
-  let question = { answers: [], voter: [] };
+  let question = { answers: [], voter: [], content: "" };
   let content = "";
   let parsedError = { detail: [] };
 
@@ -127,13 +128,18 @@
   }
 </script>
 
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+/>
+
 <div class="container my-3">
   <!-- 질문 -->
   <h2 class="border-bottom py-2">{question.subject}</h2>
   <div class="card my-3">
     <div class="card-body">
       <div class="card-text" style="white-space: pre-line;">
-        {question.content}
+        {@html marked.parse(question.content)}
       </div>
       <div class="d-flex justify-content-end">
         {#if question.modify_date}
@@ -194,7 +200,7 @@
           <textarea bind:value={answer.content} class="form-control" />
         {:else}
           <div class="card-text" style="white-space: pre-line;">
-            {answer.content}
+            {@html marked.parse(answer.content)}
           </div>
         {/if}
         <div class="d-flex justify-content-end">

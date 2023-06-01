@@ -1,4 +1,4 @@
-from models import Question, User
+from models import Question, User, Answer
 from domain.question.question_schema import QuestionCreate, QuestionUpdate, QuestionDelete
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -13,12 +13,23 @@ from datetime import datetime
 #     return total, question_list
 
 
-def get_question_list(db: Session, skip: int = 0, limit: int = 10):
-    _question_list = db.query(Question)\
-        .order_by(Question.create_date.desc())
-
-    total = _question_list.count()
-    question_list = _question_list.offset(skip).limit(limit).all()
+def get_question_list(db: Session, skip: int = 0, limit: int = 10, keyword: str = ''):
+    question_list = db.query(Question)
+    if keyword:
+        search = '%%{}%%'.format(keyword)
+        sub_query = db.query(Answer.question_id, Answer.content, User.username) \
+            .outerjoin(User, Answer.user_id == User.id).subquery()
+        question_list = question_list \
+            .outerjoin(User) \
+            .outerjoin(sub_query, sub_query.c.question_id == Question.id) \
+            .filter(Question.subject.ilike(search) |
+                    Question.content.ilike(search) |
+                    User.username.ilike(search) |
+                    sub_query.c.content.ilike(search) |
+                    sub_query.c.username.ilike(search))
+    total = question_list.distinct().count()
+    question_list = question_list.order_by(Question.create_date.desc()) \
+        .offset(skip).limit(limit).distinct().all()
     return total, question_list  # (전체 건수, 페이징 적용된 질문 목록)
 
 

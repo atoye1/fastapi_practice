@@ -1,6 +1,12 @@
 <script>
   import { link } from "svelte-spa-router";
-  import { page, username, is_login, access_token } from "../lib/store";
+  import {
+    page,
+    username,
+    is_login,
+    access_token,
+    keyword,
+  } from "../lib/store";
   import fastapi from "../lib/api";
 
   async function getUser() {
@@ -23,6 +29,7 @@
       href="/"
       on:click={() => {
         $page = 0;
+        $keyword = "";
       }}>Pybo</a
     >
     <button

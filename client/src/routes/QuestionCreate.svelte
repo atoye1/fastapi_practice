@@ -2,7 +2,6 @@
   import { push } from "svelte-spa-router";
   import fastapi from "../lib/api";
   import Error from "../components/Error.svelte";
-
   let parsedError = { detail: [] };
   let subject = "";
   let content = "";

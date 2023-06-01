@@ -1,33 +1,58 @@
 <script>
   import fastapi from "../lib/api";
   import { link } from "svelte-spa-router";
-  import { page, is_login, username } from "../lib/store";
+  import { page, is_login, keyword } from "../lib/store";
   import moment from "moment/min/moment-with-locales";
   moment.locale("ko");
 
   let question_list = [];
   let size = 10;
   let total = 0;
+  let kw = "";
 
   $: total_page = Math.ceil(total / size);
   $: page_range = $page - ($page % 10);
 
-  async function getQuestionList(_page) {
+  async function getQuestionList() {
     let params = {
-      page: _page,
+      page: $page,
       size: size,
+      keyword: $keyword,
     };
     const response = await fastapi("get", "/api/question/list", params);
     const responseBody = await response.json();
     question_list = responseBody.question_list;
     total = responseBody.total;
-    $page = _page;
+    kw = $keyword;
   }
-  // getQuestionList($page);
-  $: getQuestionList($page);
+  $: $page, $keyword, getQuestionList();
 </script>
 
 <div class="container my-3">
+  <div class="row my-3 justify-content-between">
+    <div class="d-flex col-6">
+      <div>
+        <a
+          use:link
+          href="/question-create"
+          class="btn btn-primary {$is_login ? '' : 'disabled'}">질문 등록하기</a
+        >
+      </div>
+    </div>
+    <div class="d-flex col-6 justify-content-between">
+      <form
+        class="w-75"
+        on:submit={() => {
+          ($keyword = kw), ($page = 0);
+        }}
+      >
+        <div class="input-group">
+          <input type="text" class="form-control" bind:value={kw} />
+          <button type="submit" class="btn btn-outline-secondary">찾기</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr class="text-center table-dark">
@@ -61,41 +86,27 @@
       >
     </li>
     <li class="page-item {$page === 0 && 'disabled'}">
-      <button class="page-link" on:click={() => getQuestionList($page - 1)}
-        >이전</button
-      >
+      <button class="page-link" on:click={() => $page--}>이전</button>
     </li>
     {#each Array(total_page) as _, loop_page}
       {#if loop_page >= page_range && loop_page <= page_range + 9}
         <li class="page-item {$page === loop_page && 'active'}">
-          <button class="page-link" on:click={() => getQuestionList(loop_page)}
+          <button class="page-link" on:click={() => ($page = loop_page)}
             >{loop_page + 1}</button
           >
         </li>
       {/if}
     {/each}
     <li class="page-item {$page === total_page - 1 && 'disabled'}">
-      <button class="page-link" on:click={() => getQuestionList($page + 1)}
-        >다음</button
-      >
+      <button class="page-link" on:click={() => $page++}>다음</button>
     </li>
     <li class="page-item {$page === total_page - 1 && 'disabled'}">
-      <button class="page-link" on:click={() => getQuestionList(total_page - 1)}
+      <button class="page-link" on:click={() => ($page = total_page - 1)}
         >끝</button
       >
     </li>
     <li class="page-item {$page === total_page - 1 && 'disabled'}">
-      <input
-        class="page-link"
-        type="number"
-        bind:value={$page}
-        on:change={() => getQuestionList($page - 1)}
-      />
+      <input class="page-link" type="number" bind:value={$page} />
     </li>
   </ul>
-  <a
-    use:link
-    href="/question-create"
-    class="btn btn-primary {$is_login ? '' : 'disabled'}">질문 등록하기</a
-  >
 </div>
