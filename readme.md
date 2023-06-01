@@ -1,6 +1,6 @@
 # fastapi & svelte 게시판 만들기
 
-fastapi와 svelte를 활용해서 다음과 같은 기능을 구현해본 프로젝트입니다.
+fastapi와 svelte를 활용해서 다음과 기능을 구현해본 프로젝트입니다.  
 db는 sqlite와 sqlalchemy를 활용했습니다.
 
 ## fastapi 백엔드
